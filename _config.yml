@@ -58,7 +58,7 @@ header_pages:
 - about.md
 
 # Build settings
-theme: plainwhite
+# theme: plainwhite
 
 plugins:
   - jekyll-seo-tag

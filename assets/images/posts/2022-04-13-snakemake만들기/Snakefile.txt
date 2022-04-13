@@ -1,0 +1,57 @@
+# snake tutorial pipeline.
+# updated by K.E 191101
+
+SAMPLE = ['A', 'B', 'C']
+
+
+rule all:
+    input:
+        'call/all.vcf'
+
+        
+rule bwa_map:
+    input:
+        "data/genome.fa",
+        "data/samples/{sample}.fastq"
+    output:
+        "mapping/{sample}.bam"
+    threads: 3
+    shell:
+        "bwa mem -t {threads} {input} | samtools view -Sb - > {output}"
+
+
+rule sorting:
+    input:
+        "mapping/{sample}.bam"
+    output:
+        "sorting/{sample}.sort.bam"
+    shell:
+        """
+        samtools sort -T \
+        sorting/{wildcards.sample} \
+        -O bam {input} > {output}
+        """
+
+
+rule indexing:
+    input:
+        "sorting/{sample}.sort.bam"
+    output:
+        "sorting/{sample}.sort.bam.bai"
+    shell:       
+        "samtools index {input}"
+
+
+rule calling:
+    input:
+        reference = "data/genome.fa",
+        bam = expand("sorting/{sample}.sort.bam", sample=SAMPLE),
+        bai = expand("sorting/{sample}.sort.bam.bai", sample=SAMPLE)
+    output:
+        "call/all.vcf"
+    shell:
+        """
+        samtools mpileup -g -f {input.reference} {input.bam} | \
+        bcftools call -mv - > {output}
+        """
+        

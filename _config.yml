@@ -50,7 +50,7 @@ plainwhite:
       url: "/my-work"
     - title: Resume
       url: "/resume"
-  disqus_shortname: games
+  # disqus_shortname: games
 
 # If you want to link only specific pages in your header, uncomment
 # this and add the path to the pages in order as they should show up
